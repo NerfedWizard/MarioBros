@@ -67,7 +67,7 @@ public class WorldContactListener implements ContactListener {
         else
           ((Mario) fixB.getUserData()).hit((Enemy) fixA.getUserData());
         break;
-      case MarioBros.ENEMY_BIT | MarioBros.ENEMY_BIT:
+      case MarioBros.ENEMY_BIT /**| MarioBros.ENEMY_BIT*/:
         ((Enemy) fixA.getUserData()).hitByEnemy((Enemy) fixB.getUserData());
         ((Enemy) fixB.getUserData()).hitByEnemy((Enemy) fixA.getUserData());
         break;

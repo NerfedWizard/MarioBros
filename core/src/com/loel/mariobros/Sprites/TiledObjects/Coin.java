@@ -33,12 +33,12 @@ public class Coin extends InteractiveTileObject {
     if (getCell().getTile().getId() == BLANK_COIN)
       manager.get("audio/sounds/bump.wav", Sound.class).play();
     else {
-      if (object.getProperties().containsKey("mushroom")) {
-        screen.spawnItem(new ItemDef(new Vector2(body.getPosition().x, body.getPosition().y + 16 / MarioBros.PPM),
-            Mushroom.class));
-        manager.get("audio/sounds/powerup_spawn.wav", Sound.class).play();
-      } else
-        manager.get("audio/sounds/coin.wav", Sound.class).play();
+//      if (object.getProperties().containsKey("mushroom")) {
+//        screen.spawnItem(new ItemDef(new Vector2(body.getPosition().x, body.getPosition().y + 16 / MarioBros.PPM),
+//            Mushroom.class));
+//        manager.get("audio/sounds/powerup_spawn.wav", Sound.class).play();
+//      } else
+      manager.get("audio/sounds/coin.wav", Sound.class).play();
       getCell().setTile(tileSet.getTile(BLANK_COIN));
       Hud.addScore(100);
     }

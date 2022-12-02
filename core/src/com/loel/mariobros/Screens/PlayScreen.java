@@ -186,9 +186,9 @@ public class PlayScreen implements Screen {
 
   }
 
-  public void spawnItem(ItemDef idef) {
-    itemsToSpawn.add(idef);
-  }
+//  public void spawnItem(ItemDef idef) {
+//    itemsToSpawn.add(idef);
+//  }
 
   public TiledMap getMap() {
     return map;
