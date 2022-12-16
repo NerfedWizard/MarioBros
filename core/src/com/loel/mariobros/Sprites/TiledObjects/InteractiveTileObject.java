@@ -20,7 +20,6 @@ import com.loel.mariobros.Sprites.Mario;
 public abstract class InteractiveTileObject {
   protected World world;
   protected TiledMap map;
-  protected TiledMapTile tile;
   protected Rectangle bounds;
   protected Body body;
   protected PlayScreen screen;
@@ -50,7 +49,7 @@ public abstract class InteractiveTileObject {
   }
 
 
-  public abstract void onHeadHit();
+  public abstract void onHeadHit(Mario mario);
 
   public void setCategoryFilter(short filterBit) {
     Filter filter = new Filter();

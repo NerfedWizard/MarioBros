@@ -15,10 +15,14 @@ import com.loel.mariobros.Screens.PlayScreen;
 import com.loel.mariobros.Sprites.Enemies.Enemy;
 import com.loel.mariobros.Sprites.Enemies.Goomba;
 //import com.loel.mariobros.Sprites.Enemies.Turtle;
+import com.loel.mariobros.Sprites.Enemies.Turtle;
 import com.loel.mariobros.Sprites.TiledObjects.Brick;
 import com.loel.mariobros.Sprites.TiledObjects.Coin;
 
 public class B2WorldCreator {
+  private Array<Goomba> goombas;
+  private Array<Turtle> turtles;
+
   public B2WorldCreator(PlayScreen screen) {
     World world = screen.getWorld();
     TiledMap map = screen.getMap();
@@ -67,6 +71,16 @@ public class B2WorldCreator {
 
       new Coin(screen, object);
     }
+  }
 
+  public Array<Goomba> getGoombas() {
+    return goombas;
+  }
+
+  public Array<Enemy> getEnemies() {
+    Array<Enemy> enemies = new Array<Enemy>();
+    enemies.addAll(goombas);
+    enemies.addAll(turtles);
+    return enemies;
   }
 }

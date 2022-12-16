@@ -25,21 +25,19 @@ public class Goomba extends Enemy {
   private boolean destroyed;
   private boolean setToDestroy;
   private AssetManager manager;
+  float angle;
 
   public Goomba(PlayScreen screen, float x, float y) {
     super(screen, x, y);
-    frames = new Array<>();
-
-    for (int i = 0; i < 2; i++) {
+    frames = new Array<TextureRegion>();
+    for (int i = 0; i < 2; i++)
       frames.add(new TextureRegion(screen.getAtlas().findRegion("goomba"), i * 16, 0, 16, 16));
-    }
     walkAnimation = new Animation(0.4f, frames);
-//        smashed = new Animation(0.4f,smash);
     stateTime = 0;
     setBounds(getX(), getY(), 16 / MarioBros.PPM, 16 / MarioBros.PPM);
-    destroyed = false;
     setToDestroy = false;
-    manager = screen.getMarioBros().getManager();
+    destroyed = false;
+    angle = 0;
   }
 
   @Override
@@ -49,7 +47,6 @@ public class Goomba extends Enemy {
       world.destroyBody(b2body);
       destroyed = true;
       setRegion(new TextureRegion(screen.getAtlas().findRegion("goomba"), 32, 0, 16, 16));
-//            setRegion((TextureRegion) smashed.getKeyFrame(stateTime));
       stateTime = 0;
     } else if (!destroyed) {
       b2body.setLinearVelocity(velocity);
@@ -59,7 +56,7 @@ public class Goomba extends Enemy {
   }
 
   @Override
-  public void hitOnHead() {
+  public void hitOnHead(Mario mario) {
     setToDestroy = true;
     manager.get("audio/sounds/stomp.wav", Sound.class).play();
   }
@@ -112,9 +109,4 @@ public class Goomba extends Enemy {
     if (!destroyed || stateTime < 1)
       super.draw(batch);
   }
-
-//  @Override
-//  public void hitOnHead() {
-//    setToDestroy = true;
-//  }
 }

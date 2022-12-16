@@ -23,6 +23,7 @@ import com.loel.mariobros.Sprites.Enemies.Enemy;
 import com.loel.mariobros.Sprites.Enemies.Goomba;
 import com.loel.mariobros.Sprites.Items.Item;
 import com.loel.mariobros.Sprites.Items.ItemDef;
+import com.loel.mariobros.Sprites.Items.Mushroom;
 import com.loel.mariobros.Sprites.Mario;
 import com.loel.mariobros.Tools.B2WorldCreator;
 import com.loel.mariobros.Tools.WorldContactListener;
@@ -40,7 +41,6 @@ public class PlayScreen implements Screen {
   private TextureAtlas atlas;
   public static boolean alreadyDestroyed = false;
   private AssetManager manager;
-
   //basic playscreen variables
   private OrthographicCamera gamecam;
   private Viewport gamePort;
@@ -54,12 +54,14 @@ public class PlayScreen implements Screen {
   //Box2d variables
   private World world;
   private Box2DDebugRenderer b2dr;
+  private B2WorldCreator creator;
 
   //sprites
   private Mario player;
-  private Goomba goomba;
 
   private Music music;
+
+  private Array<Item> items;
   private LinkedBlockingQueue<ItemDef> itemsToSpawn;
 
 
@@ -91,7 +93,7 @@ public class PlayScreen implements Screen {
     //allows for debug lines of our box2d world.
     b2dr = new Box2DDebugRenderer();
 
-    new B2WorldCreator(this);
+    creator = new B2WorldCreator(this);
 
     //create mario in our game world
     player = new Mario(this);
@@ -100,11 +102,27 @@ public class PlayScreen implements Screen {
 
     music = manager.get("audio/music/mario_music.ogg", Music.class);
     music.setLooping(true);
-    music.play();
+    music.setVolume(0.3f);
+    //music.play();
 
-    goomba = new Goomba(this, .32f, .32f);
-
+    items = new Array<Item>();
+    itemsToSpawn = new LinkedBlockingQueue<ItemDef>();
   }
+
+  public void spawnItem(ItemDef idef) {
+    itemsToSpawn.add(idef);
+  }
+
+
+  public void handleSpawningItems() {
+    if (!itemsToSpawn.isEmpty()) {
+      ItemDef idef = itemsToSpawn.poll();
+      if (idef.type == Mushroom.class) {
+        items.add(new Mushroom(this, idef.position.x, idef.position.y));
+      }
+    }
+  }
+
 
   public TextureAtlas getAtlas() {
     return atlas;
@@ -134,16 +152,28 @@ public class PlayScreen implements Screen {
   public void update(float dt) {
     //handle user input first
     handleInput(dt);
+    handleSpawningItems();
 
     //takes 1 step in the physics simulation(60 times per second)
     world.step(1 / 60f, 6, 2);
 
     player.update(dt);
-    goomba.update(dt);
+    for (Enemy enemy : creator.getEnemies()) {
+      enemy.update(dt);
+      if (enemy.getX() < player.getX() + 224 / MarioBros.PPM) {
+        enemy.b2body.setActive(true);
+      }
+    }
+
+    for (Item item : items)
+      item.update(dt);
+
     hud.update(dt);
 
     //attach our gamecam to our players.x coordinate
-    gamecam.position.x = player.b2body.getPosition().x;
+    if (player.currentState != Mario.State.DEAD) {
+      gamecam.position.x = player.b2body.getPosition().x;
+    }
 
     //update our gamecam with correct coordinates after changes
     gamecam.update();
@@ -170,13 +200,28 @@ public class PlayScreen implements Screen {
     game.batch.setProjectionMatrix(gamecam.combined);
     game.batch.begin();
     player.draw(game.batch);
-    goomba.draw(game.batch);
+    for (Enemy enemy : creator.getEnemies())
+      enemy.draw(game.batch);
+    for (Item item : items)
+      item.draw(game.batch);
     game.batch.end();
 
     //Set our batch to now draw what the Hud camera sees.
     game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
     hud.stage.draw();
 
+    if (gameOver()) {
+      game.setScreen(new GameOverScreen(game));
+      dispose();
+    }
+
+  }
+
+  public boolean gameOver() {
+    if (player.currentState == Mario.State.DEAD && player.getStateTimer() > 3) {
+      return true;
+    }
+    return false;
   }
 
   @Override
@@ -221,6 +266,10 @@ public class PlayScreen implements Screen {
     world.dispose();
     b2dr.dispose();
     hud.dispose();
+  }
+
+  public Hud getHud() {
+    return hud;
   }
 
 }

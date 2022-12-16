@@ -118,7 +118,7 @@ public class Turtle extends Enemy {
   }
 
   @Override
-  public void hitOnHead() {
+  public void hitOnHead(Mario mario) {
 //    if (currentState == State.STANDING_SHELL) {
 //      if (mario.b2body.getPosition().x > b2body.getPosition().x)
 //        velocity.x = -2;
